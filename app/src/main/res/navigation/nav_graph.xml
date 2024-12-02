@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/onboardFragment">
+
+    <fragment
+        android:id="@+id/onboardFragment"
+        android:name="com.example.laba5.presentation.screens.fragments.OnboardFragment"
+        android:label="OnboardFragment"
+        tools:layout="@layout/fragment_onboard">
+        <action
+            android:id="@+id/action_onboardFragment_to_signInFragment"
+            app:destination="@id/signInFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/messengerFragment"
+        android:name="com.example.laba5.presentation.screens.HomeFragment"
+        android:label="MessengerFragment"
+        tools:layout="@layout/fragment_home" />
+
+    <fragment
+        android:id="@+id/signUpFragment"
+        android:name="com.example.laba5.presentation.screens.SignUpFragment"
+        android:label="SignUpFragment"
+        tools:layout="@layout/fragment_sign_up">
+        <action
+            android:id="@+id/action_signUpFragment_to_signInFragment"
+            app:destination="@id/signInFragment" />
+        <argument
+            android:name="user"
+            app:argType="com.example.laba5.models.User"
+            app:nullable="true"
+            android:defaultValue="@null"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/characterListFragment"
+        android:name="com.example.laba5.presentation.screens.CharacterListFragment"
+        android:label="Character List"
+        tools:layout="@layout/fragment_character_list" />
+
+    <fragment
+        android:id="@+id/signInFragment"
+        android:name="com.example.laba5.presentation.screens.SignInFragment"
+        android:label="SignInFragment"
+        tools:layout="@layout/fragment_sign_in">
+        <argument
+            android:name="user"
+            app:argType="com.example.laba5.models.User"
+            app:nullable="true"
+            android:defaultValue="@null"/>
+        <action
+            android:id="@+id/action_signInFragment_to_signUpFragment"
+            app:destination="@id/signUpFragment" />
+        <action
+            android:id="@+id/action_signInFragment_to_messengerFragment"
+            app:destination="@id/messengerFragment" />
+        <action
+            android:id="@+id/action_signInFragment_to_characterListFragment"
+            app:destination="@id/characterListFragment" />
+    </fragment>
+
+</navigation>
