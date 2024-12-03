@@ -6,11 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.laba5.R
 import com.example.laba5.presentation.CharacterViewModel
 import com.example.laba5.presentation.adapter.CharacterAdapter
+import com.google.gson.Gson
 
 class CharacterListFragment : Fragment() {
 
@@ -30,17 +32,23 @@ class CharacterListFragment : Fragment() {
         val recyclerView = view.findViewById<RecyclerView>(R.id.recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        // Инициализация адаптера и установка его для RecyclerView
         characterAdapter = CharacterAdapter()
         recyclerView.adapter = characterAdapter
 
-        // Подписываемся на изменения данных в ViewModel
         viewModel.characters.observe(viewLifecycleOwner) { characters ->
-            // Обновляем данные адаптера
             characterAdapter.updateData(characters)
+
+            val gson = Gson()
+            val charactersJson = gson.toJson(characters)
+
+            val settingsButton = view.findViewById<View>(R.id.settings_button)
+            settingsButton.setOnClickListener {
+                val action = CharacterListFragmentDirections
+                    .actionCharacterListFragmentToSettingsFragment(charactersJson)
+                findNavController().navigate(action)
+            }
         }
 
-        // Запрашиваем данные
         viewModel.fetchCharacters(page = 24)
     }
 }

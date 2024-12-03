@@ -1,0 +1,90 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/current_language_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/language"
+        android:padding="8dp" />
+
+    <Button
+        android:id="@+id/change_language_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Change Language" />
+
+    <Button
+        android:id="@+id/save_language_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/save_language" />
+
+    <TextView
+        android:id="@+id/current_font_size_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/font_size"
+        android:padding="8dp" />
+
+    <Button
+        android:id="@+id/change_font_size_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Change Font Size" />
+
+    <Button
+        android:id="@+id/save_font_size_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/save_font_size" />
+
+    <TextView
+        android:id="@+id/current_theme_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Theme: Light"
+        android:padding="8dp" />
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/switch_dark_mode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/dark_mode" />
+
+    <TextView
+        android:id="@+id/file_status_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="File status"
+        android:padding="8dp" />
+
+    <Button
+        android:id="@+id/save_file_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Save File" />
+
+    <Button
+        android:id="@+id/delete_file_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Delete File" />
+
+    <Button
+        android:id="@+id/backup_file_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Backup File" />
+
+    <Button
+        android:id="@+id/restore_file_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Restore File" />
+
+</LinearLayout>

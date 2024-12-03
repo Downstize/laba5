@@ -57,4 +57,5 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     implementation(libs.retrofit)
     implementation(libs.gson)
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
 }

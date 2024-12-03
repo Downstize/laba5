@@ -22,6 +22,16 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.example.laba5.presentation.screens.SettingsFragment"
+        android:label="SettingsFragment"
+        tools:layout="@layout/fragment_settings">
+        <argument
+            android:name="charactersJson"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
         android:id="@+id/signUpFragment"
         android:name="com.example.laba5.presentation.screens.SignUpFragment"
         android:label="SignUpFragment"
@@ -40,7 +50,11 @@
         android:id="@+id/characterListFragment"
         android:name="com.example.laba5.presentation.screens.CharacterListFragment"
         android:label="Character List"
-        tools:layout="@layout/fragment_character_list" />
+        tools:layout="@layout/fragment_character_list">
+        <action
+            android:id="@+id/action_characterListFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/signInFragment"
