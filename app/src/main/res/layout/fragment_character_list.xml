@@ -4,17 +4,76 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!-- RecyclerView для отображения списка -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/settings_button"
+    <!-- Прогресс-бар (круговой) -->
+    <ProgressBar
+        android:id="@+id/progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:layout_gravity="bottom|end"
-        android:contentDescription="@string/go_to_settings"
-        android:src="@android:drawable/ic_menu_preferences" />
+        android:layout_gravity="center"
+        android:visibility="gone"
+        style="?android:attr/progressBarStyleLarge" />
+
+    <!-- Кнопки и текущая нумерация -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Нумерация страниц -->
+        <TextView
+            android:id="@+id/page_number_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="Page 1"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <!-- Кнопки навигации -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <Button
+                android:id="@+id/previous_page_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Previous Page"
+                android:enabled="false" />
+
+            <Button
+                android:id="@+id/update_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:text="Update" />
+
+            <Button
+                android:id="@+id/next_page_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Next Page" />
+        </LinearLayout>
+    </LinearLayout>
+
+<!--    &lt;!&ndash; Плавающая кнопка настроек &ndash;&gt;-->
+<!--    <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+<!--        android:id="@+id/settings_button"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_margin="16dp"-->
+<!--        android:layout_gravity="bottom|end"-->
+<!--        android:contentDescription="@string/go_to_settings"-->
+<!--        android:src="@android:drawable/ic_menu_preferences" />-->
 </FrameLayout>
