@@ -1,42 +1,28 @@
 package com.example.laba5.presentation.screens
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ProgressBar
-import android.widget.TextView
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.laba5.R
-import com.example.laba5.data.ApiService
-import com.example.laba5.data.local.database.AppDatabase
 import com.example.laba5.data.repository.CharacterRepository
+import com.example.laba5.databinding.FragmentCharacterListBinding
 import com.example.laba5.models.Character
 import com.example.laba5.presentation.adapter.CharacterAdapter
-import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class CharacterListFragment : Fragment() {
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var progressBar: ProgressBar
+
+    private var _binding: FragmentCharacterListBinding? = null
+    private val binding get() = _binding!!
+
     private lateinit var characterAdapter: CharacterAdapter
     private lateinit var characterRepository: CharacterRepository
-
-    private lateinit var pageNumberText: TextView
-    private lateinit var previousPageButton: Button
-    private lateinit var updateButton: Button
-    private lateinit var nextPageButton: Button
 
     private var currentPage: Int = 1
     private var allCharacters: List<Character> = emptyList()
@@ -44,99 +30,145 @@ class CharacterListFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_character_list, container, false)
-
+    ): View {
+        _binding = FragmentCharacterListBinding.inflate(inflater, container, false)
         characterRepository = CharacterRepository(requireContext())
 
-        recyclerView = view.findViewById(R.id.recycler_view)
-        progressBar = view.findViewById(R.id.progress_bar)
-        pageNumberText = view.findViewById(R.id.page_number_text)
-        previousPageButton = view.findViewById(R.id.previous_page_button)
-        updateButton = view.findViewById(R.id.update_button)
-        nextPageButton = view.findViewById(R.id.next_page_button)
-
         characterAdapter = CharacterAdapter()
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        recyclerView.adapter = characterAdapter
+        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.recyclerView.adapter = characterAdapter
 
-        // Кнопка обновления
-        updateButton.setOnClickListener {
+        binding.updateButton.setOnClickListener {
             fetchCharactersFromApi()
         }
 
-        // Кнопка "Предыдущая страница"
-        previousPageButton.setOnClickListener {
+        binding.previousPageButton.setOnClickListener {
             if (currentPage > 1) {
                 currentPage--
                 updateDisplayedCharacters()
             }
         }
 
-        // Кнопка "Следующая страница"
-        nextPageButton.setOnClickListener {
-            if (currentPage * 50 < allCharacters.size) {
+
+        binding.nextPageButton.setOnClickListener {
+
                 currentPage++
                 updateDisplayedCharacters()
-            }
+
         }
 
         observeCharacters()
+        return binding.root
+    }
 
-        return view
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun observeCharacters() {
-        lifecycleScope.launchWhenStarted {
-            characterRepository.observeCharacters().collect { characterEntities ->
-                allCharacters = characterEntities.map {
+        Log.d("CharacterListFragment", "observeCharacters called")
+        lifecycleScope.launch {
+            binding.progressBar.visibility = View.VISIBLE
+
+            // Проверяем, есть ли данные в БД
+            val charactersInDb = characterRepository.observeCharacters().first()
+
+            if (charactersInDb.isEmpty()) {
+                // Если БД пуста, загружаем данные из API
+                Log.d("CharacterListFragment", "No characters in DB, fetching from API")
+                val apiCharacters = characterRepository.getCharacters()
+                if (!apiCharacters.isNullOrEmpty()) {
+                    characterRepository.saveCharactersToDb(apiCharacters)
+                    allCharacters = apiCharacters
+                    currentPage = 1 // Сбрасываем страницу после загрузки данных
+                    updateDisplayedCharacters()
+                } else {
+                    Log.d("CharacterListFragment", "No characters fetched from API")
+                }
+            } else {
+                // Если данные есть в БД, отображаем их
+                Log.d("CharacterListFragment", "Loaded ${charactersInDb.size} characters from DB")
+                allCharacters = charactersInDb.map { entity ->
                     Character(
-                        it.name,
-                        it.culture,
-                        it.born,
-                        it.titles,
-                        it.aliases,
-                        it.playedBy
+                        name = entity.name,
+                        culture = entity.culture,
+                        born = entity.born,
+                        titles = entity.titles,
+                        aliases = entity.aliases,
+                        playedBy = entity.playedBy
                     )
                 }
+                currentPage = 1 // Сбрасываем страницу при загрузке из базы
                 updateDisplayedCharacters()
             }
+
+            binding.progressBar.visibility = View.GONE
         }
     }
 
+
+
+
+
     private fun fetchCharactersFromApi() {
-        progressBar.visibility = View.VISIBLE
+        binding.progressBar.visibility = View.VISIBLE
         lifecycleScope.launch {
             val characters = characterRepository.getCharacters()
             if (!characters.isNullOrEmpty()) {
                 characterRepository.saveCharactersToDb(characters)
             }
-            progressBar.visibility = View.GONE
+            binding.progressBar.visibility = View.GONE
         }
     }
+
+    private fun fetchCharactersForPage(page: Int) {
+        binding.progressBar.visibility = View.VISIBLE
+        lifecycleScope.launch {
+            val newCharacters = characterRepository.getCharactersByPage(page) // API поддерживает пагинацию
+            if (!newCharacters.isNullOrEmpty()) {
+                Log.d("CharacterListFragment", "Fetched ${newCharacters.size} characters for page $page")
+
+                // Добавляем данные в общий список
+                allCharacters = allCharacters + newCharacters
+                characterRepository.saveCharactersToDb(newCharacters) // Сохраняем в базу
+                updateDisplayedCharacters()
+            } else {
+                Log.d("CharacterListFragment", "No characters fetched for page $page")
+            }
+            binding.progressBar.visibility = View.GONE
+        }
+    }
+
 
     private fun updateDisplayedCharacters() {
         val fromIndex = (currentPage - 1) * 50
         val toIndex = (fromIndex + 50).coerceAtMost(allCharacters.size)
 
+        // Проверяем, есть ли данные для текущей страницы
         val subList = if (fromIndex < allCharacters.size) {
             allCharacters.subList(fromIndex, toIndex)
         } else {
             emptyList()
         }
 
-        characterAdapter.submitList(subList)
-        updatePageNumber(currentPage)
+        if (subList.isEmpty()) {
+            Log.d("CharacterListFragment", "No characters for page $currentPage, fetching from API")
+            // Если данных нет, загружаем их из API
+            fetchCharactersForPage(currentPage)
+        } else {
+            Log.d("CharacterListFragment", "Displaying characters from $fromIndex to $toIndex")
+            characterAdapter.submitList(subList)
+        }
 
-        updateButtonState()
+        // Обновляем текст текущей страницы
+        binding.pageNumberText.text = "Страница: $currentPage"
+
+        // Управляем состоянием кнопок
+        binding.previousPageButton.isEnabled = currentPage > 1
+        binding.nextPageButton.isEnabled = allCharacters.size >= toIndex
     }
 
-    private fun updatePageNumber(page: Int) {
-        pageNumberText.text = "Страница: $page"
-    }
 
-    private fun updateButtonState() {
-        previousPageButton.isEnabled = currentPage > 1
-        nextPageButton.isEnabled = currentPage * 50 < allCharacters.size
-    }
+
 }

@@ -25,6 +25,7 @@ class CharacterRepository(context: Context) {
         return try {
             val response = apiService.getCharacters()
             if (response.isSuccessful) {
+                Log.d("CharacterRepository", "Fetched characters: ${response.body()?.size ?: 0}")
                 response.body()
             } else {
                 Log.e("CharacterRepository", "Error: ${response.errorBody()?.string()}")
@@ -35,6 +36,8 @@ class CharacterRepository(context: Context) {
             emptyList()
         }
     }
+
+
 
     fun saveHeroesToFile(context: Context, heroes: List<String?>, fileName: String): Boolean {
         val externalStorage = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
@@ -62,8 +65,11 @@ class CharacterRepository(context: Context) {
                 playedBy = it.playedBy
             )
         }
+        Log.d("CharacterRepository", "Saving ${entities.size} characters to DB")
         characterDao.insertCharacters(entities)
     }
+
+
 
     suspend fun getCharactersFromDb(): Flow<List<CharacterEntity>> {
         return characterDao.getAllCharacters()

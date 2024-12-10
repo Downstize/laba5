@@ -8,9 +8,11 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.Response
 
 interface ApiService {
-    @GET("characters")
-    suspend fun getCharacters(): Response<List<Character>>
 
     @GET("characters")
-    suspend fun getCharacters(@Query("page") page: Int = 1): Response<List<Character>>
+    suspend fun getCharacters(
+        @Query("page") page: Int = 1,
+        @Query("pageSize") pageSize: Int = 50
+    ): Response<List<Character>>
+
 }
